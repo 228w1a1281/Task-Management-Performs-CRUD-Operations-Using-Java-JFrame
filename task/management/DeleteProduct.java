@@ -7,6 +7,7 @@ package task.management;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import javax.swing.JOptionPane;
 
 /**
@@ -120,25 +121,31 @@ public class DeleteProduct extends javax.swing.JFrame {
         String idStr = jTextField1.getText().trim();
 
         if (!idStr.isEmpty()) {
-            int id = Integer.parseInt(idStr);
+        int id = Integer.parseInt(idStr);
 
-            PreparedStatement ps = con.prepareStatement("DELETE FROM products WHERE id = ?");
-            ps.setInt(1, id);
+        PreparedStatement ps = con.prepareStatement("DELETE FROM products WHERE id = ?");
+        ps.setInt(1, id);
 
-            int result = ps.executeUpdate();
-            if (result > 0) {
-                JOptionPane.showMessageDialog(this, "Product deleted successfully.");
-            } else {
-                JOptionPane.showMessageDialog(this, "Product ID not found.");
-            }
+        int result = ps.executeUpdate();
+
+        if (result > 0) {
+            // Reset AUTO_INCREMENT only if deletion was successful
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate("ALTER TABLE products AUTO_INCREMENT = 1");
+
+            JOptionPane.showMessageDialog(this, "Product deleted successfully and ID reset.");
         } else {
-            JOptionPane.showMessageDialog(this, "Please enter a Product ID.");
+            JOptionPane.showMessageDialog(this, "Product ID not found.");
         }
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Invalid Product ID format.");
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
-    }        // TODO add your handling code here:
+    } else {
+        JOptionPane.showMessageDialog(this, "Please enter a Product ID.");
+    }
+} catch (NumberFormatException e) {
+    JOptionPane.showMessageDialog(this, "Invalid Product ID format.");
+} catch (Exception ex) {
+    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+}
+       // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**

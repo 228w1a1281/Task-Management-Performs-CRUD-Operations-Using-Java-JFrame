@@ -7,6 +7,7 @@ package task.management;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import javax.swing.JOptionPane;
 
 /**
@@ -130,8 +131,13 @@ public class DeleteBuyer extends javax.swing.JFrame {
             ps.setInt(1, id);
 
             int result = ps.executeUpdate();
+
             if (result > 0) {
-                JOptionPane.showMessageDialog(this, "Buyer deleted successfully.");
+                // Reset AUTO_INCREMENT only if deletion succeeded
+                Statement stmt = con.createStatement();
+                stmt.executeUpdate("ALTER TABLE buyers AUTO_INCREMENT = 1");
+
+                JOptionPane.showMessageDialog(this, "Buyer deleted successfully and ID reset.");
             } else {
                 JOptionPane.showMessageDialog(this, "Buyer ID not found.");
             }
@@ -142,7 +148,7 @@ public class DeleteBuyer extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "Invalid Buyer ID format.");
     } catch (Exception ex) {
         JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
-    }        // TODO add your handling code here:
+    }      // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
